@@ -1,4 +1,5 @@
 import { useRouter } from "expo-router";
+import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   Pressable,
@@ -7,9 +8,29 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { useAuth } from "../context/AuthContext";
 
 export default function Index() {
   const router = useRouter();
+  const { login, isLoading, error } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [formError, setFormError] = useState<string | null>(null);
+
+  const handleSignIn = async () => {
+    if (!email.trim() || !password.trim()) {
+      setFormError("Email and password are required.");
+      return;
+    }
+
+    setFormError(null);
+    try {
+      await login({ email: email.trim(), password: password.trim() });
+      router.replace("/dashboard");
+    } catch {
+      // Error is handled by context state.
+    }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-[#FBF7F0] dark:bg-[#0F1110]">
@@ -44,6 +65,8 @@ export default function Index() {
             placeholderTextColor="#A79B8B"
             autoCapitalize="none"
             keyboardType="email-address"
+            value={email}
+            onChangeText={setEmail}
           />
         </View>
 
@@ -56,6 +79,8 @@ export default function Index() {
             placeholder="********"
             placeholderTextColor="#A79B8B"
             secureTextEntry
+            value={password}
+            onChangeText={setPassword}
           />
           <View className="mt-3 flex-row items-center justify-between">
             <Text className="text-[13px] text-[#6B6257] dark:text-[#A79B8B]">
@@ -71,12 +96,21 @@ export default function Index() {
 
         <Pressable
           className="mt-6 rounded-2xl bg-[#0E6B5B] py-4 shadow-lg dark:bg-[#2C8C7A]"
-          onPress={() => router.push("/dashboard")}
+          onPress={handleSignIn}
+          disabled={isLoading}
         >
           <Text className="text-center text-[16px] font-semibold text-white">
-            Sign in
+            {isLoading ? "Signing in..." : "Sign in"}
           </Text>
         </Pressable>
+
+        {(formError || error) && (
+          <View className="mt-4 rounded-2xl border border-[#F1C9C9] bg-[#FCEAEA] px-4 py-3 dark:border-[#4A2C2C] dark:bg-[#2B1B1B]">
+            <Text className="text-[13px] text-[#9B2C2C] dark:text-[#F29B9B]">
+              {formError ?? error}
+            </Text>
+          </View>
+        )}
 
         <View className="mt-4">
           <Text className="text-[13px] text-[#6B6257] dark:text-[#A79B8B]">

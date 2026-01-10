@@ -1,12 +1,23 @@
-import { useRouter } from "expo-router";
 import { useColorScheme } from "nativewind";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { Pressable, Switch, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useAuth } from "../context/AuthContext";
+import { useUserMeQuery } from "../services/users/queries";
 
 export default function Settings() {
-  const router = useRouter();
   const { colorScheme, setColorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
+  const { logout } = useAuth();
+  const { data: me } = useUserMeQuery();
+
+  const initials =
+    me?.name
+      ?.split(" ")
+      .filter(Boolean)
+      .map((part) => part[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase() ?? "??";
 
   return (
     <SafeAreaView className="flex-1 bg-[#FBF7F0] dark:bg-[#0F1110]">
@@ -22,15 +33,15 @@ export default function Settings() {
           <View className="flex-row items-center">
             <View className="h-12 w-12 items-center justify-center rounded-full bg-[#E4F1EC] dark:bg-[#1F2E2A]">
               <Text className="text-[16px] font-semibold text-[#1F6C55] dark:text-[#8DDAC6]">
-                AM
+                {initials}
               </Text>
             </View>
             <View className="ml-4 flex-1">
               <Text className="text-[15px] font-semibold text-[#1E1B16] dark:text-[#F5F1EA]">
-                Ava Martin
+                {me?.name ?? "Loading..."}
               </Text>
               <Text className="mt-1 text-[12px] text-[#6B6257] dark:text-[#A79B8B]">
-                Store #12 • Manager
+                {me?.role ?? "Role"}
               </Text>
             </View>
           </View>
@@ -67,7 +78,7 @@ export default function Settings() {
             </View>
             <Pressable
               className="rounded-full bg-[#8B3A1A] px-4 py-2 dark:bg-[#F2B397]"
-              onPress={() => router.replace("/login")}
+              onPress={logout}
             >
               <Text className="text-[12px] font-semibold text-[#FFF4EC] dark:text-[#241B16]">
                 Log out

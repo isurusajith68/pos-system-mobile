@@ -1,13 +1,13 @@
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Pressable, ScrollView, Text, View } from "react-native";
+import { useUserMeQuery } from "../services/users/queries";
 
 const quickActions = [
   { title: "New\nSale", icon: "receipt", route: "/sale" },
   { title: "Products", icon: "tag", route: "/products" },
   { title: "Inventory", icon: "box", route: "/inventory" },
   { title: "PO", icon: "doc", route: "/purchase-order" },
-  { title: "Reports", icon: "chart", route: "/reports" },
 ];
 
 const recentSales = [
@@ -72,6 +72,7 @@ function ActionIcon({ type }: { type: string }) {
 
 export default function Dashboard() {
   const router = useRouter();
+  const { data: me } = useUserMeQuery();
 
   return (
     <SafeAreaView className="flex-1 bg-[#FBF7F0] dark:bg-[#0F1110]">
@@ -86,7 +87,7 @@ export default function Dashboard() {
               Welcome back
             </Text>
             <Text className="mt-1 text-[24px] font-semibold text-[#1E1B16] dark:text-[#F5F1EA]">
-              Ava Martin
+              {me?.name ?? "Welcome"}
             </Text>
           </View>
           <View className="rounded-full bg-[#111827] px-4 py-2 dark:bg-[#F5F1EA]">
@@ -96,7 +97,7 @@ export default function Dashboard() {
           </View>
         </View>
 
-        <View className="mt-6 rounded-[26px] bg-[#F1ECE2] p-5 overflow-hidden dark:bg-[#1A1B1A]">
+        <View className="mt-6 rounded-[26px] bg-[#c7a052] p-5 overflow-hidden dark:bg-[#1A1B1A]">
           <View className="absolute -right-8 -top-10 h-28 w-28 rounded-full bg-[#F4D79B] dark:bg-[#5B4A1D]" />
           <Text className="text-[13px] text-[#6B6257] dark:text-[#A79B8B]">
             Today sales
@@ -144,7 +145,7 @@ export default function Dashboard() {
           {quickActions.map((action) => (
             <Pressable
               key={action.title}
-              className="mb-4 w-[48%] rounded-2xl border border-[#E3D7C7] bg-white px-4 py-5 dark:border-[#2B2F2C] dark:bg-[#1F2321]"
+              className="mb-4 w-[30%] rounded-2xl border border-[#E3D7C7] bg-white px-4 py-5 dark:border-[#2B2F2C] dark:bg-[#1F2321]"
               onPress={() => router.push(action.route)}
             >
               <ActionIcon type={action.icon} />
