@@ -1,13 +1,17 @@
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { useColorScheme } from "nativewind";
 
 export default function AppLayout() {
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === "dark";
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: "#1E1B16",
-        tabBarInactiveTintColor: "#6B6257",
+        tabBarActiveTintColor: isDark ? "#F5F1EA" : "#1E1B16",
+        tabBarInactiveTintColor: isDark ? "#A79B8B" : "#6B6257",
         tabBarLabelStyle: { fontSize: 10, marginBottom: 8 },
         tabBarIconStyle: { marginTop: 8 },
         tabBarStyle: {
@@ -17,13 +21,15 @@ export default function AppLayout() {
           // bottom: 16,
           height: 64,
           borderRadius: 20,
-          backgroundColor: "#FFFFFF",
+          backgroundColor: isDark ? "#1B1E1C" : "#FFFFFF",
           borderTopWidth: 0,
+          borderWidth: 1,
+          borderColor: isDark ? "#2B2F2C" : "#E3D7C7",
           shadowColor: "#000000",
-          shadowOpacity: 0.08,
+          shadowOpacity: isDark ? 0.28 : 0.08,
           shadowRadius: 12,
           shadowOffset: { width: 0, height: 6 },
-          elevation: 8,
+          elevation: isDark ? 12 : 8,
         },
       }}
     >
