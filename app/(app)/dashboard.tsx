@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Pressable, ScrollView, Text, View } from "react-native";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../context/AuthContext";
 import { useRecentInvoicesQuery } from "../services/invoices/queries";
 import { useDailyInvoiceStatsQuery } from "../services/invoices/stats";
@@ -76,10 +77,16 @@ function ActionIcon({ type }: { type: string }) {
 
 export default function Dashboard() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { data: me } = useUserMeQuery();
   const { user } = useAuth();
   const { data: recentInvoices = [] } = useRecentInvoicesQuery();
   const { data: dailyStats } = useDailyInvoiceStatsQuery();
+
+  const handleRefresh = () => {
+    queryClient.invalidateQueries({ queryKey: ["invoices"] });
+    queryClient.invalidateQueries({ queryKey: ["users", "me"] });
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-[#FBF7F0] dark:bg-[#0F1110]">
@@ -97,10 +104,20 @@ export default function Dashboard() {
               {me?.name ?? "Welcome"}
             </Text>
           </View>
-          <View className="rounded-full bg-[#111827] px-4 py-2 dark:bg-[#F5F1EA]">
-            <Text className="text-xs font-semibold text-[#F4F1EA] dark:text-[#1E1B16]">
-              {user?.storeName ?? "Store"}
-            </Text>
+          <View className="flex-row items-center">
+            <Pressable
+              className="mr-2 rounded-full bg-[#E4F1EC] px-3 py-2 dark:bg-[#1F2E2A]"
+              onPress={handleRefresh}
+            >
+              <Text className="text-xs font-semibold text-[#1F6C55] dark:text-[#8DDAC6]">
+                Refresh
+              </Text>
+            </Pressable>
+            <View className="rounded-full bg-[#111827] px-4 py-2 dark:bg-[#F5F1EA]">
+              <Text className="text-xs font-semibold text-[#F4F1EA] dark:text-[#1E1B16]">
+                {user?.storeName ?? "Store"}
+              </Text>
+            </View>
           </View>
         </View>
 
