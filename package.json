@@ -1,5 +1,5 @@
 {
-  "name": "pos-system-mobile",
+  "name": "zentra-pos",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {

@@ -1,7 +1,8 @@
 {
   "expo": {
-    "name": "pos-system-mobile",
-    "slug": "pos-system-mobile",
+    "name": "zentra-pos",
+    "slug": "zentra
+    ",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -44,6 +45,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "d06ec3b4-5cd7-4b4c-9b60-0b26bb068ff6"
+      }
+    },
+    "owner": "isurusajith"
   }
 }
