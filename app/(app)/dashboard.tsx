@@ -2,10 +2,10 @@ import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { useQueryClient } from "@tanstack/react-query";
-import { useAuth } from "../context/AuthContext";
-import { useRecentInvoicesQuery } from "../services/invoices/queries";
-import { useDailyInvoiceStatsQuery } from "../services/invoices/stats";
-import { useUserMeQuery } from "../services/users/queries";
+import { useAuth } from "../../src/context/AuthContext";
+import { useRecentInvoicesQuery } from "../../src/services/invoices/queries";
+import { useDailyInvoiceStatsQuery } from "../../src/services/invoices/stats";
+import { useUserMeQuery } from "../../src/services/users/queries";
 
 const quickActions = [
   { title: "New\nSale", icon: "receipt", route: "/sale" },

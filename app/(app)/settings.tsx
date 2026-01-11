@@ -1,9 +1,9 @@
 import { useColorScheme } from "nativewind";
 import { Pressable, Switch, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useAuth } from "../context/AuthContext";
-import { useSubscriptionsQuery } from "../services/subscriptions/queries";
-import { useUserMeQuery } from "../services/users/queries";
+import { useAuth } from "../../src/context/AuthContext";
+import { useSubscriptionsQuery } from "../../src/services/subscriptions/queries";
+import { useUserMeQuery } from "../../src/services/users/queries";
 
 export default function Settings() {
   const { colorScheme, setColorScheme } = useColorScheme();
