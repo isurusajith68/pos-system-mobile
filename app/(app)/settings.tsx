@@ -2,6 +2,7 @@ import { useColorScheme } from "nativewind";
 import { Pressable, Switch, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../context/AuthContext";
+import { useSubscriptionsQuery } from "../services/subscriptions/queries";
 import { useUserMeQuery } from "../services/users/queries";
 
 export default function Settings() {
@@ -9,6 +10,8 @@ export default function Settings() {
   const isDark = colorScheme === "dark";
   const { logout } = useAuth();
   const { data: me } = useUserMeQuery();
+  const { data: subscriptions = [] } = useSubscriptionsQuery();
+  const activeSubscription = subscriptions[0];
 
   const initials =
     me?.name
@@ -43,7 +46,47 @@ export default function Settings() {
               <Text className="mt-1 text-[12px] text-[#6B6257] dark:text-[#A79B8B]">
                 {me?.role ?? "Role"}
               </Text>
+              <Text className="mt-1 text-[12px] text-[#6B6257] dark:text-[#A79B8B]">
+                {me?.email ?? ""}
+              </Text>
             </View>
+          </View>
+        </View>
+
+        <View className="mt-6 rounded-2xl border border-[#E3D7C7] bg-white px-4 py-4 dark:border-[#2B2F2C] dark:bg-[#1F2321]">
+          <Text className="text-[14px] font-semibold text-[#1E1B16] dark:text-[#F5F1EA]">
+            Subscription
+          </Text>
+          <Text className="mt-3 text-[12px] text-[#6B6257] dark:text-[#A79B8B]">
+            {activeSubscription?.plan_name ?? "Plan"}
+          </Text>
+          <View className="mt-3 flex-row items-center justify-between">
+            <Text className="text-[12px] text-[#6B6257] dark:text-[#A79B8B]">
+              Joined
+            </Text>
+            <Text className="text-[12px] font-medium text-[#1E1B16] dark:text-[#F5F1EA]">
+              {activeSubscription
+                ? new Date(activeSubscription.joined_at).toLocaleDateString()
+                : "--"}
+            </Text>
+          </View>
+          <View className="mt-2 flex-row items-center justify-between">
+            <Text className="text-[12px] text-[#6B6257] dark:text-[#A79B8B]">
+              Expires
+            </Text>
+            <Text className="text-[12px] font-medium text-[#1E1B16] dark:text-[#F5F1EA]">
+              {activeSubscription
+                ? new Date(activeSubscription.expires_at).toLocaleDateString()
+                : "--"}
+            </Text>
+          </View>
+          <View className="mt-2 flex-row items-center justify-between">
+            <Text className="text-[12px] text-[#6B6257] dark:text-[#A79B8B]">
+              Status
+            </Text>
+            <Text className="text-[12px] font-semibold text-[#1F6C55] dark:text-[#8DDAC6]">
+              {activeSubscription?.status ?? "--"}
+            </Text>
           </View>
         </View>
 
