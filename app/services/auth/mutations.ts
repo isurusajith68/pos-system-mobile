@@ -16,6 +16,7 @@ export type AuthUser = {
   schemaName: string;
   subscriptionId: string;
   accessToken: string;
+  storeName?: string;
 };
 
 export type AuthResponse = AuthUser & {

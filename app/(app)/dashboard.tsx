@@ -1,6 +1,9 @@
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Pressable, ScrollView, Text, View } from "react-native";
+import { useAuth } from "../context/AuthContext";
+import { useRecentInvoicesQuery } from "../services/invoices/queries";
+import { useDailyInvoiceStatsQuery } from "../services/invoices/stats";
 import { useUserMeQuery } from "../services/users/queries";
 
 const quickActions = [
@@ -10,11 +13,12 @@ const quickActions = [
   { title: "PO", icon: "doc", route: "/purchase-order" },
 ];
 
-const recentSales = [
-  { id: "Sale #1284", time: "2 min ago", amount: "$156.50" },
-  { id: "Sale #1283", time: "11 min ago", amount: "$42.10" },
-  { id: "Sale #1282", time: "22 min ago", amount: "$84.90" },
-];
+const formatCurrency = (value: number) =>
+  new Intl.NumberFormat("en-LK", {
+    style: "currency",
+    currency: "LKR",
+    minimumFractionDigits: 0,
+  }).format(value);
 
 function ActionIcon({ type }: { type: string }) {
   if (type === "receipt") {
@@ -73,6 +77,9 @@ function ActionIcon({ type }: { type: string }) {
 export default function Dashboard() {
   const router = useRouter();
   const { data: me } = useUserMeQuery();
+  const { user } = useAuth();
+  const { data: recentInvoices = [] } = useRecentInvoicesQuery();
+  const { data: dailyStats } = useDailyInvoiceStatsQuery();
 
   return (
     <SafeAreaView className="flex-1 bg-[#FBF7F0] dark:bg-[#0F1110]">
@@ -92,7 +99,7 @@ export default function Dashboard() {
           </View>
           <View className="rounded-full bg-[#111827] px-4 py-2 dark:bg-[#F5F1EA]">
             <Text className="text-xs font-semibold text-[#F4F1EA] dark:text-[#1E1B16]">
-              Store #12
+              {user?.storeName ?? "Store"}
             </Text>
           </View>
         </View>
@@ -103,7 +110,7 @@ export default function Dashboard() {
             Today sales
           </Text>
           <Text className="mt-2 text-[28px] font-semibold text-[#1E1B16] dark:text-[#F5F1EA]">
-            $4,235
+            {dailyStats ? formatCurrency(dailyStats.total_amount) : "--"}
           </Text>
           <View className="mt-4 flex-row items-center justify-between">
             <View className="flex-1 rounded-2xl bg-white px-4 py-3 dark:bg-[#1F2321]">
@@ -111,7 +118,7 @@ export default function Dashboard() {
                 Transactions
               </Text>
               <Text className="mt-1 text-[18px] font-semibold text-[#1E1B16] dark:text-[#F5F1EA]">
-                142
+                {dailyStats?.invoice_count ?? "--"}
               </Text>
             </View>
             <View className="mx-3 flex-1 rounded-2xl bg-white px-4 py-3 dark:bg-[#1F2321]">
@@ -119,7 +126,12 @@ export default function Dashboard() {
                 Avg ticket
               </Text>
               <Text className="mt-1 text-[18px] font-semibold text-[#1E1B16] dark:text-[#F5F1EA]">
-                $29.8
+                {dailyStats
+                  ? formatCurrency(
+                      dailyStats.total_amount /
+                        Math.max(dailyStats.invoice_count, 1),
+                    )
+                  : "--"}
               </Text>
             </View>
           </View>
@@ -161,21 +173,21 @@ export default function Dashboard() {
             Recent sales
           </Text>
           <View className="mt-4">
-            {recentSales.map((sale) => (
+            {recentInvoices.map((invoice) => (
               <View
-                key={sale.id}
+                key={invoice.invoice_id}
                 className="mb-3 rounded-2xl border border-[#E3D7C7] bg-white px-4 py-4 dark:border-[#2B2F2C] dark:bg-[#1F2321]"
               >
                 <View className="flex-row items-center justify-between">
                   <Text className="text-[14px] font-semibold text-[#1E1B16] dark:text-[#F5F1EA]">
-                    {sale.id}
+                    {invoice.invoice_id}
                   </Text>
                   <Text className="text-[14px] font-semibold text-[#F97316] dark:text-[#F59E0B]">
-                    {sale.amount}
+                    {formatCurrency(invoice.total_amount)}
                   </Text>
                 </View>
                 <Text className="mt-2 text-[12px] text-[#6B6257] dark:text-[#A79B8B]">
-                  {sale.time}
+                  {new Date(invoice.date).toLocaleString()}
                 </Text>
               </View>
             ))}
