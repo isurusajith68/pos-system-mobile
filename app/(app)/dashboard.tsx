@@ -2,7 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useColorScheme } from "nativewind";
 import { useEffect, useRef } from "react";
-import { Animated, Pressable, ScrollView, Text, View } from "react-native";
+import { Animated, FlatList, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../src/context/AuthContext";
 import { useRecentInvoicesQuery } from "../../src/services/invoices/queries";
@@ -16,11 +16,11 @@ const quickActions = [
   { title: "PO", icon: "doc", route: "/purchase-order" },
 ];
 
-const formatCurrency = (value: number) =>
+export const formatCurrency = (value: number) =>
   new Intl.NumberFormat("en-LK", {
     style: "currency",
     currency: "LKR",
-    minimumFractionDigits: 0,
+    minimumFractionDigits: 2,
   }).format(value);
 
 function ActionIcon({ type }: { type: string }) {
@@ -130,13 +130,16 @@ export default function Dashboard() {
     queryClient.invalidateQueries({ queryKey: ["users", "me"] });
   };
 
+  const recentListData = isRecentLoading
+    ? Array.from({ length: 6 }).map((_, index) => ({
+        placeholder: true,
+        id: `placeholder-${index}`,
+      }))
+    : recentInvoices;
+
   return (
     <SafeAreaView className="flex-1 bg-base dark:bg-base-dark">
-      <ScrollView
-        className="flex-1"
-        contentContainerClassName="px-6 pb-32"
-        showsVerticalScrollIndicator={false}
-      >
+      <View className="flex-1 px-6">
         <View className="mt-4 flex-row items-center justify-between">
           <View>
             <Text className="text-[13px] text-muted dark:text-muted-dark">
@@ -238,49 +241,46 @@ export default function Dashboard() {
           ))}
         </View>
 
-        <View className="mt-1 border-t border-line pt-5 dark:border-line-dark">
+        <View className="mt-1 flex-1 border-t border-line pt-5 dark:border-line-dark">
           <Text className="text-[16px] font-semibold text-ink dark:text-ink-dark">
             Recent sales
           </Text>
-          <View className="mt-4">
-            {isRecentLoading ? (
-              <>
-                {Array.from({ length: 3 }).map((_, index) => (
-                  <View
-                    key={`skeleton-${index}`}
-                    className="mb-3 rounded-2xl border border-line bg-card px-4 py-4 dark:border-line-dark dark:bg-card-dark"
-                  >
-                    <View className="flex-row items-center justify-between">
-                      <SkeletonBlock height={14} width={90} />
-                      <SkeletonBlock height={14} width={70} />
-                    </View>
-                    <SkeletonBlock height={12} width={140} className="mt-3" />
+          <FlatList
+            className="mt-4"
+            data={recentListData}
+            keyExtractor={(item) =>
+              "placeholder" in item ? item.id : item.invoice_id
+            }
+            showsVerticalScrollIndicator={false}
+            contentContainerClassName="pb-32"
+            renderItem={({ item }) =>
+              "placeholder" in item ? (
+                <View className="mb-3 rounded-2xl border border-line bg-card px-4 py-4 dark:border-line-dark dark:bg-card-dark">
+                  <View className="flex-row items-center justify-between">
+                    <SkeletonBlock height={14} width={90} />
+                    <SkeletonBlock height={14} width={70} />
                   </View>
-                ))}
-              </>
-            ) : (
-              recentInvoices.map((invoice) => (
-                <View
-                  key={invoice.invoice_id}
-                  className="mb-3 rounded-2xl border border-line bg-card px-4 py-4 dark:border-line-dark dark:bg-card-dark"
-                >
+                  <SkeletonBlock height={12} width={140} className="mt-3" />
+                </View>
+              ) : (
+                <View className="mb-3 rounded-2xl border border-line bg-card px-4 py-4 dark:border-line-dark dark:bg-card-dark">
                   <View className="flex-row items-center justify-between">
                     <Text className="text-[14px] font-semibold text-ink dark:text-ink-dark">
-                      {invoice.invoice_id}
+                      {item.invoice_id}
                     </Text>
                     <Text className="text-[14px] font-semibold text-[#F97316] dark:text-[#F59E0B]">
-                      {formatCurrency(invoice.total_amount)}
+                      {formatCurrency(item.total_amount)}
                     </Text>
                   </View>
                   <Text className="mt-2 text-[12px] text-muted dark:text-muted-dark">
-                    {new Date(invoice.date).toLocaleString()}
+                    {new Date(item.date).toLocaleString()}
                   </Text>
                 </View>
-              ))
-            )}
-          </View>
+              )
+            }
+          />
         </View>
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
