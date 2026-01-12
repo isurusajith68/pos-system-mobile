@@ -10,7 +10,7 @@ import { useDailyInvoiceStatsQuery } from "../../src/services/invoices/stats";
 import { useUserMeQuery } from "../../src/services/users/queries";
 
 const quickActions = [
-  { title: "New\nSale", icon: "receipt", route: "/sale" },
+  { title: "Sales", icon: "receipt", route: "/sale" },
   { title: "Products", icon: "tag", route: "/products" },
   { title: "Inventory", icon: "box", route: "/inventory" },
   { title: "PO", icon: "doc", route: "/purchase-order" },
@@ -251,7 +251,7 @@ export default function Dashboard() {
             keyExtractor={(item) =>
               "placeholder" in item ? item.id : item.invoice_id
             }
-            showsVerticalScrollIndicator={false}
+            showsVerticalScrollIndicator={true}
             contentContainerClassName="pb-32"
             renderItem={({ item }) =>
               "placeholder" in item ? (

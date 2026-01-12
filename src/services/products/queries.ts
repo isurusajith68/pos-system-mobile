@@ -4,10 +4,25 @@ import { api } from "../api";
 export type Product = {
   product_id: string;
   name: string;
-  price?: number | null;
-  stock_level?: number | null;
+  sku?: string | null;
+  barcode?: string | null;
+  english_name?: string | null;
+  description?: string | null;
+  brand?: string | null;
   category_id?: string | null;
   category_name?: string | null;
+  price: number;
+  cost_price?: number | null;
+  discounted_price?: number | null;
+  wholesale?: number | null;
+  tax_inclusive_price?: number | null;
+  tax_rate?: number | null;
+  unit_size?: string | null;
+  unit_type?: string | null;
+  unit?: string | null;
+  stock_level?: number | null;
+  created_at?: string | null;
+  updated_at?: string | null;
 };
 
 export type ProductStats = {
@@ -29,6 +44,8 @@ export type ProductsQueryParams = {
   limit?: number;
   search?: string;
   categoryId?: string | null;
+  stockFilter?: "all" | "in" | "low" | "out";
+  threshold?: number;
 };
 
 export function useProductsQuery({
@@ -36,9 +53,11 @@ export function useProductsQuery({
   limit = 20,
   search,
   categoryId,
+  stockFilter = "all",
+  threshold = 10,
 }: ProductsQueryParams) {
   return useQuery({
-    queryKey: ["products", { page, limit, search, categoryId }],
+    queryKey: ["products", { page, limit, search, categoryId, stockFilter, threshold }],
     queryFn: async () => {
       const response = await api.get<ProductsResponse>("/products", {
         params: {
@@ -46,6 +65,8 @@ export function useProductsQuery({
           limit,
           search: search || undefined,
           category_id: categoryId || undefined,
+          stock: stockFilter !== "all" ? stockFilter : undefined,
+          threshold: stockFilter === "low" ? threshold : undefined,
         },
       });
       return response.data;
@@ -62,5 +83,16 @@ export function useProductStatsQuery(threshold = 10) {
       });
       return response.data;
     },
+  });
+}
+
+export function useProductQuery(productId?: string) {
+  return useQuery({
+    queryKey: ["products", productId],
+    queryFn: async () => {
+      const response = await api.get<Product>(`/products/${productId}`);
+      return response.data;
+    },
+    enabled: Boolean(productId),
   });
 }

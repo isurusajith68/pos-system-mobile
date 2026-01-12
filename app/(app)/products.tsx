@@ -10,6 +10,8 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useColorScheme } from "nativewind";
+import { useRouter } from "expo-router";
+import { useQueryClient } from "@tanstack/react-query";
 import { useCategoriesQuery } from "../../src/services/categories/queries";
 import {
   Product,
@@ -21,7 +23,7 @@ const formatCurrency = (value: number) =>
   new Intl.NumberFormat("en-LK", {
     style: "currency",
     currency: "LKR",
-    minimumFractionDigits: 0,
+    minimumFractionDigits: 2,
   }).format(value);
 
 function SkeletonBlock({
@@ -72,9 +74,14 @@ function SkeletonBlock({
 }
 
 export default function Products() {
+  const router = useRouter();
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [categoryId, setCategoryId] = useState<string | null>(null);
   const [threshold, setThreshold] = useState(10);
+  const [stockFilter, setStockFilter] = useState<
+    "all" | "in" | "low" | "out"
+  >("all");
   const [page, setPage] = useState(1);
   const [productList, setProductList] = useState<Product[]>([]);
   const limit = 20;
@@ -87,6 +94,8 @@ export default function Products() {
     limit,
     search: debouncedSearch,
     categoryId,
+    stockFilter,
+    threshold,
   });
 
   const products = data?.rows ?? [];
@@ -95,7 +104,7 @@ export default function Products() {
   useEffect(() => {
     setPage(1);
     setProductList([]);
-  }, [debouncedSearch, categoryId]);
+  }, [debouncedSearch, categoryId, stockFilter, threshold]);
 
   useEffect(() => {
     if (!data) {
@@ -120,7 +129,10 @@ export default function Products() {
       typeof item.price === "number" ? formatCurrency(item.price) : "--";
 
     return (
-      <View className="mb-3 rounded-2xl border border-line bg-card px-4 py-4 dark:border-line-dark dark:bg-card-dark">
+      <Pressable
+        onPress={() => router.push(`/products/${item.product_id}`)}
+        className="mb-3 rounded-2xl border border-line bg-card px-4 py-4 dark:border-line-dark dark:bg-card-dark"
+      >
         <View className="flex-row items-center justify-between">
           <View className="flex-1 pr-3">
             <Text className="text-[15px] font-semibold text-ink dark:text-ink-dark">
@@ -157,7 +169,7 @@ export default function Products() {
             </View>
           </View>
         </View>
-      </View>
+      </Pressable>
     );
   };
 
@@ -165,77 +177,39 @@ export default function Products() {
     <SafeAreaView className="flex-1 bg-base dark:bg-base-dark">
       <View className="flex-1 px-6">
         <View className="mt-4">
-          <Text className="text-[22px] font-semibold text-ink dark:text-ink-dark">
-            Products
-          </Text>
-          <Text className="mt-2 text-[14px] text-muted dark:text-muted-dark">
-            Manage items, pricing, and categories.
-          </Text>
-        </View>
-
-        <View className="mt-5 rounded-2xl border border-line bg-card px-3 py-2 dark:border-line-dark dark:bg-card-dark">
-          {/* <Text className="text-[12px] text-muted dark:text-muted-dark">
-            Search
-          </Text> */}
-          <TextInput
-            className="text-[15px] text-ink dark:text-ink-dark"
-            placeholder="Search products"
-            placeholderTextColor="#A79B8B"
-            value={search}
-            onChangeText={setSearch}
-          />
-        </View>
-
-        <View className="mt-4">
-          <Text className="text-[12px] text-muted dark:text-muted-dark">
-            Categories
-          </Text>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={true}
-            className="mt-2"
-          >
+          <View className="flex-row items-center">
             <Pressable
-              className={`mr-2 rounded-full border px-4 py-2 ${
-                !categoryId
-                  ? "border-transparent bg-primary dark:bg-primary-dark"
-                  : "border-line bg-card dark:border-line-dark dark:bg-card-dark"
-              }`}
-              onPress={() => setCategoryId(null)}
+              className="mr-3 h-10 w-10 items-center justify-center rounded-full border border-line bg-card dark:border-line-dark dark:bg-card-dark"
+              onPress={() => {
+                if (router.canGoBack()) {
+                  router.back();
+                  return;
+                }
+                router.replace("/dashboard");
+              }}
             >
-              <Text
-                className={`text-[12px] font-semibold ${
-                  !categoryId ? "text-white" : "text-ink dark:text-ink-dark"
-                }`}
-              >
-                All
+              <Text className="text-[18px] text-ink dark:text-ink-dark">&lt;</Text>
+            </Pressable>
+            <View>
+              <Text className="text-[22px] font-semibold text-ink dark:text-ink-dark">
+                Products
+              </Text>
+              <Text className="mt-1 text-[14px] text-muted dark:text-muted-dark">
+                Manage items, pricing, and categories.
+              </Text>
+            </View>
+            <Pressable
+              className="ml-auto rounded-full bg-accent px-3 py-2 dark:bg-accent-dark"
+              onPress={() => {
+                queryClient.invalidateQueries({ queryKey: ["products"] });
+                queryClient.invalidateQueries({ queryKey: ["categories"] });
+              }}
+            >
+              <Text className="text-xs font-semibold text-accent-ink dark:text-accent-ink-dark">
+                Refresh
               </Text>
             </Pressable>
-            {categories.map((category) => {
-              const isActive = categoryId === category.category_id;
-              return (
-                <Pressable
-                  key={category.category_id}
-                  className={`mr-2 rounded-full border px-4 py-2 ${
-                    isActive
-                      ? "border-transparent bg-primary dark:bg-primary-dark"
-                      : "border-line bg-card dark:border-line-dark dark:bg-card-dark"
-                  }`}
-                  onPress={() =>
-                    setCategoryId(isActive ? null : category.category_id)
-                  }
-                >
-                  <Text
-                    className={`text-[12px] font-semibold ${
-                      isActive ? "text-white" : "text-ink dark:text-ink-dark"
-                    }`}
-                  >
-                    {category.name}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </ScrollView>
+          </View>
         </View>
 
         <View className="mt-5">
@@ -290,6 +264,121 @@ export default function Products() {
               </View>
             ))}
           </View>
+        </View>
+
+        <View className="mt-2 flex-row items-center rounded-2xl border border-line bg-card px-3 py-1 dark:border-line-dark dark:bg-card-dark">
+          <TextInput
+            className="flex-1 text-[15px] text-ink dark:text-ink-dark"
+            placeholder="Search products"
+            placeholderTextColor="#A79B8B"
+            value={search}
+            onChangeText={setSearch}
+          />
+          {search.trim().length > 0 ? (
+            <Pressable
+              className="ml-2 h-8 w-8 items-center justify-center rounded-full bg-accent dark:bg-accent-dark"
+              onPress={() => setSearch("")}
+            >
+              <Text className="text-[16px] text-accent-ink dark:text-accent-ink-dark">
+                x
+              </Text>
+            </Pressable>
+          ) : null}
+        </View>
+
+        <View className="mt-4">
+          <Text className="text-[12px] text-muted dark:text-muted-dark">
+            Stock filter
+          </Text>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={true}
+            className="mt-2"
+          >
+            {[
+              { label: "All", value: "all" },
+              { label: "In stock", value: "in" },
+              { label: "Low stock", value: "low" },
+              { label: "Out stock", value: "out" },
+            ].map((item) => {
+              const isActive = stockFilter === item.value;
+              return (
+                <Pressable
+                  key={item.value}
+                  className={`mr-2 rounded-full border px-4 py-2 ${
+                    isActive
+                      ? "border-transparent bg-primary dark:bg-primary-dark"
+                      : "border-line bg-card dark:border-line-dark dark:bg-card-dark"
+                  }`}
+                  onPress={() =>
+                    setStockFilter(
+                      item.value as "all" | "in" | "low" | "out"
+                    )
+                  }
+                >
+                  <Text
+                    className={`text-[12px] font-semibold ${
+                      isActive ? "text-white" : "text-ink dark:text-ink-dark"
+                    }`}
+                  >
+                    {item.label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+        </View>
+
+        <View className="mt-4">
+          <Text className="text-[12px] text-muted dark:text-muted-dark">
+            Categories
+          </Text>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={true}
+            className="mt-2"
+          >
+            <Pressable
+              className={`mr-2 rounded-full border px-4 py-2 ${
+                !categoryId
+                  ? "border-transparent bg-primary dark:bg-primary-dark"
+                  : "border-line bg-card dark:border-line-dark dark:bg-card-dark"
+              }`}
+              onPress={() => setCategoryId(null)}
+            >
+              <Text
+                className={`text-[12px] font-semibold ${
+                  !categoryId ? "text-white" : "text-ink dark:text-ink-dark"
+                }`}
+              >
+                All
+              </Text>
+            </Pressable>
+            {categories.map((category) => {
+              const isActive = categoryId === category.category_id;
+              return (
+                <Pressable
+                  key={category.category_id}
+                  className={`mr-2 rounded-full border px-4 py-2 ${
+                    isActive
+                      ? "border-transparent bg-primary dark:bg-primary-dark"
+                      : "border-line bg-card dark:border-line-dark dark:bg-card-dark"
+                  }`}
+                  onPress={() =>
+                    setCategoryId(isActive ? null : category.category_id)
+                  }
+                >
+                  <Text
+                    className={`text-[12px] font-semibold ${
+                      isActive ? "text-white" : "text-ink dark:text-ink-dark"
+                    }`}
+                  >
+                    {category.name}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
         </View>
 
         <View className="mt-2 mb-2">
