@@ -27,5 +27,7 @@ export function useRecentInvoicesQuery() {
       const response = await api.get<RecentInvoice[]>("/invoices/recent");
       return response.data;
     },
+    refetchInterval: 5000,
+    refetchIntervalInBackground: true,
   });
 }

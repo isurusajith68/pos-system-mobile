@@ -1,17 +1,24 @@
 import { useColorScheme } from "nativewind";
-import { Pressable, Switch, Text, View } from "react-native";
+import { useEffect, useState } from "react";
+import { Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../src/context/AuthContext";
 import { useSubscriptionsQuery } from "../../src/services/subscriptions/queries";
+import {
+  getThemePreference,
+  setThemePreference,
+  type ThemePreference,
+} from "../../src/services/theme";
 import { useUserMeQuery } from "../../src/services/users/queries";
 
 export default function Settings() {
   const { colorScheme, setColorScheme } = useColorScheme();
-  const isDark = colorScheme === "dark";
   const { logout } = useAuth();
   const { data: me } = useUserMeQuery();
   const { data: subscriptions = [] } = useSubscriptionsQuery();
   const activeSubscription = subscriptions[0];
+  const [themePreference, setThemePreferenceState] =
+    useState<ThemePreference>("system");
 
   const initials =
     me?.name
@@ -21,6 +28,23 @@ export default function Settings() {
       .slice(0, 2)
       .join("")
       .toUpperCase() ?? "??";
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadPreference = async () => {
+      const stored = await getThemePreference();
+      if (stored && isMounted) {
+        setThemePreferenceState(stored);
+      }
+    };
+
+    loadPreference();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <SafeAreaView className="flex-1 bg-[#FBF7F0] dark:bg-[#0F1110]">
@@ -91,21 +115,45 @@ export default function Settings() {
         </View>
 
         <View className="mt-8 rounded-2xl border border-[#E3D7C7] bg-white px-4 py-4 dark:border-[#2B2F2C] dark:bg-[#1F2321]">
-          <View className="flex-row items-center justify-between">
-            <View>
-              <Text className="text-[15px] font-semibold text-[#1E1B16] dark:text-[#F5F1EA]">
-                Dark mode
-              </Text>
-              <Text className="mt-1 text-[12px] text-[#6B6257] dark:text-[#A79B8B]">
-                Toggle the app theme.
-              </Text>
-            </View>
-            <Switch
-              value={isDark}
-              onValueChange={(value) => setColorScheme(value ? "dark" : "light")}
-              trackColor={{ false: "#E3D7C7", true: "#2C8C7A" }}
-              thumbColor={isDark ? "#F5F1EA" : "#FFFFFF"}
-            />
+          <Text className="text-[15px] font-semibold text-[#1E1B16] dark:text-[#F5F1EA]">
+            Theme
+          </Text>
+          <Text className="mt-1 text-[12px] text-[#6B6257] dark:text-[#A79B8B]">
+            Follow system or force a mode.
+          </Text>
+          <View className="mt-4 flex-row rounded-full border border-[#E3D7C7] bg-[#F7F1E7] p-1 dark:border-[#2B2F2C] dark:bg-[#171A18]">
+            {(["system", "light", "dark"] as const).map((mode) => {
+              const isActive = themePreference === mode;
+              return (
+                <Pressable
+                  key={mode}
+                  className={`flex-1 rounded-full px-3 py-2 ${
+                    isActive
+                      ? "bg-[#0E6B5B] dark:bg-[#2C8C7A]"
+                      : "bg-transparent"
+                  }`}
+                  onPress={async () => {
+                    setThemePreferenceState(mode);
+                    setColorScheme(mode);
+                    await setThemePreference(mode);
+                  }}
+                >
+                  <Text
+                    className={`text-center text-[12px] font-semibold ${
+                      isActive
+                        ? "text-white"
+                        : "text-[#6B6257] dark:text-[#A79B8B]"
+                    }`}
+                  >
+                    {mode === "system"
+                      ? "System"
+                      : mode === "light"
+                        ? "Light"
+                        : "Dark"}
+                  </Text>
+                </Pressable>
+              );
+            })}
           </View>
         </View>
 
