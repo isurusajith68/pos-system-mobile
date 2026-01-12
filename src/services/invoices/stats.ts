@@ -19,7 +19,7 @@ export function useDailyInvoiceStatsQuery() {
       );
       return response.data;
     },
-    refetchInterval: 5000,
+    refetchInterval: 20000,
     refetchIntervalInBackground: true,
   });
 }

@@ -1,7 +1,9 @@
-import { Redirect, Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { Redirect, Tabs } from "expo-router";
 import { useColorScheme } from "nativewind";
+import AnimatedTabBarButton from "../../components/AnimatedTabBarButton";
 import { useAuth } from "../../src/context/AuthContext";
+import { colors } from "../../src/theme/colors";
 
 export default function AppLayout() {
   const { colorScheme } = useColorScheme();
@@ -16,10 +18,12 @@ export default function AppLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: isDark ? "#F5F1EA" : "#1E1B16",
-        tabBarInactiveTintColor: isDark ? "#A79B8B" : "#6B6257",
+        tabBarButton: (props) => <AnimatedTabBarButton {...props} />,
+        tabBarActiveTintColor: isDark ? colors.inkDark : colors.ink,
+        tabBarInactiveTintColor: isDark ? colors.mutedDark : colors.muted,
         tabBarLabelStyle: { fontSize: 10, marginBottom: 8 },
         tabBarIconStyle: { marginTop: 8 },
+        tabBarHideOnKeyboard: true,
         tabBarStyle: {
           position: "absolute",
           left: 24,
@@ -27,10 +31,10 @@ export default function AppLayout() {
           // bottom: 16,
           height: 64,
           borderRadius: 20,
-          backgroundColor: isDark ? "#1B1E1C" : "#FFFFFF",
+          backgroundColor: isDark ? colors.cardDark : colors.card,
           borderTopWidth: 0,
           borderWidth: 1,
-          borderColor: isDark ? "#2B2F2C" : "#E3D7C7",
+          borderColor: isDark ? colors.lineDark : colors.line,
           shadowColor: "#000000",
           shadowOpacity: isDark ? 0.28 : 0.08,
           shadowRadius: 12,

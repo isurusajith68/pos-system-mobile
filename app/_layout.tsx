@@ -1,3 +1,4 @@
+import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { useEffect } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -5,6 +6,7 @@ import { useColorScheme } from "nativewind";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "../src/context/AuthContext";
 import { getThemePreference, setThemePreference } from "../src/services/theme";
+import { colors } from "../src/theme/colors";
 import "./global.css";
 
 const queryClient = new QueryClient({
@@ -17,7 +19,17 @@ const queryClient = new QueryClient({
 });
 
 export default function RootLayout() {
-  const { setColorScheme } = useColorScheme();
+  const { setColorScheme, colorScheme } = useColorScheme();
+  const isDark = colorScheme === "dark";
+  const navigationTheme = isDark
+    ? {
+        ...DarkTheme,
+        colors: { ...DarkTheme.colors, background: colors.baseDark },
+      }
+    : {
+        ...DefaultTheme,
+        colors: { ...DefaultTheme.colors, background: colors.base },
+      };
 
   useEffect(() => {
     let isMounted = true;
@@ -44,10 +56,23 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(auth)" />
-            <Stack.Screen name="(app)" />
-          </Stack>
+          <ThemeProvider value={navigationTheme}>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                animation: "fade",
+                animationDuration: 220,
+                animationTypeForReplace: "push",
+                contentStyle: {
+                  backgroundColor: isDark ? colors.baseDark : colors.base,
+                },
+              }}
+            >
+              <Stack.Screen name="index" options={{ animation: "fade" }} />
+              <Stack.Screen name="(auth)" options={{ animation: "fade" }} />
+              <Stack.Screen name="(app)" options={{ animation: "fade" }} />
+            </Stack>
+          </ThemeProvider>
         </AuthProvider>
       </QueryClientProvider>
     </SafeAreaProvider>

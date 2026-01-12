@@ -1,7 +1,9 @@
-import { useRouter } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Pressable, ScrollView, Text, View } from "react-native";
 import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "expo-router";
+import { useColorScheme } from "nativewind";
+import { useEffect, useRef } from "react";
+import { Animated, Pressable, ScrollView, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../src/context/AuthContext";
 import { useRecentInvoicesQuery } from "../../src/services/invoices/queries";
 import { useDailyInvoiceStatsQuery } from "../../src/services/invoices/stats";
@@ -22,66 +24,106 @@ const formatCurrency = (value: number) =>
   }).format(value);
 
 function ActionIcon({ type }: { type: string }) {
-  if (type === "receipt") {
-    return (
-      <View className="h-9 w-9 items-center justify-center rounded-xl bg-[#F3EEE5] dark:bg-[#2A2E2B]">
-        <View className="h-4 w-5 rounded-sm border border-[#4D4A44] dark:border-[#C9C2B8]">
-          <View className="mt-1 h-0.5 w-3 self-center bg-[#4D4A44] dark:bg-[#C9C2B8]" />
-          <View className="mt-1 h-0.5 w-2 self-center bg-[#4D4A44] dark:bg-[#C9C2B8]" />
-        </View>
-      </View>
-    );
-  }
+  const base =
+    "h-9 w-9 items-center justify-center rounded-xl bg-accent dark:bg-accent-dark";
+  const line = "bg-accent-ink dark:bg-accent-ink-dark";
 
-  if (type === "tag") {
+  if (type === "receipt")
     return (
-      <View className="h-9 w-9 items-center justify-center rounded-xl bg-[#F3EEE5] dark:bg-[#2A2E2B]">
-        <View className="h-4 w-6 rounded-md border border-[#4D4A44] dark:border-[#C9C2B8]">
-          <View className="ml-1 mt-1 h-1.5 w-1.5 rounded-full bg-[#4D4A44] dark:bg-[#C9C2B8]" />
+      <View className={base}>
+        <View className="h-4 w-5 rounded-sm border border-accent-ink dark:border-accent-ink-dark">
+          <View className={`mt-1 h-0.5 w-3 self-center ${line}`} />
+          <View className={`mt-1 h-0.5 w-2 self-center ${line}`} />
         </View>
       </View>
     );
-  }
 
-  if (type === "box") {
+  if (type === "tag")
     return (
-      <View className="h-9 w-9 items-center justify-center rounded-xl bg-[#F3EEE5] dark:bg-[#2A2E2B]">
-        <View className="h-5 w-5 rounded border border-[#4D4A44] dark:border-[#C9C2B8]">
-          <View className="h-0.5 w-5 bg-[#4D4A44] dark:bg-[#C9C2B8]" />
+      <View className={base}>
+        <View className="h-4 w-6 rounded-md border border-accent-ink dark:border-accent-ink-dark">
+          <View className={`ml-1 mt-1 h-1.5 w-1.5 rounded-full ${line}`} />
         </View>
       </View>
     );
-  }
 
-  if (type === "doc") {
+  if (type === "box")
     return (
-      <View className="h-9 w-9 items-center justify-center rounded-xl bg-[#F3EEE5] dark:bg-[#2A2E2B]">
-        <View className="h-5 w-4 rounded-sm border border-[#4D4A44] dark:border-[#C9C2B8]">
-          <View className="mt-1 h-0.5 w-3 self-center bg-[#4D4A44] dark:bg-[#C9C2B8]" />
-          <View className="mt-1 h-0.5 w-2 self-center bg-[#4D4A44] dark:bg-[#C9C2B8]" />
+      <View className={base}>
+        <View className="h-5 w-5 rounded border border-accent-ink dark:border-accent-ink-dark">
+          <View className={`h-0.5 w-5 ${line}`} />
         </View>
       </View>
     );
-  }
+
+  if (type === "doc")
+    return (
+      <View className={base}>
+        <View className="h-5 w-4 rounded-sm border border-accent-ink dark:border-accent-ink-dark">
+          <View className={`mt-1 h-0.5 w-3 self-center ${line}`} />
+          <View className={`mt-1 h-0.5 w-2 self-center ${line}`} />
+        </View>
+      </View>
+    );
+
+  return null;
+}
+function SkeletonBlock({
+  width,
+  height,
+  className,
+}: {
+  width?: number | string;
+  height: number;
+  className?: string;
+}) {
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === "dark";
+  const opacity = useRef(new Animated.Value(0.45)).current;
+
+  useEffect(() => {
+    const animation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(opacity, {
+          toValue: 0.9,
+          duration: 700,
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacity, {
+          toValue: 0.45,
+          duration: 700,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+
+    animation.start();
+    return () => animation.stop();
+  }, [opacity]);
 
   return (
-    <View className="h-9 w-9 items-center justify-center rounded-xl bg-[#F3EEE5] dark:bg-[#2A2E2B]">
-      <View className="flex-row items-end">
-        <View className="h-3 w-1.5 rounded-sm bg-[#4D4A44] dark:bg-[#C9C2B8]" />
-        <View className="ml-1 h-4 w-1.5 rounded-sm bg-[#4D4A44] dark:bg-[#C9C2B8]" />
-        <View className="ml-1 h-5 w-1.5 rounded-sm bg-[#4D4A44] dark:bg-[#C9C2B8]" />
-      </View>
-    </View>
+    <Animated.View
+      className={className}
+      style={{
+        width,
+        height,
+        opacity,
+        borderRadius: 999,
+        backgroundColor: isDark ? "#242726" : "#E7DED1",
+      }}
+    />
   );
 }
 
 export default function Dashboard() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { data: me } = useUserMeQuery();
+  const { data: me, isLoading: isUserLoading } = useUserMeQuery();
   const { user } = useAuth();
-  const { data: recentInvoices = [] } = useRecentInvoicesQuery();
-  const { data: dailyStats } = useDailyInvoiceStatsQuery();
+  const { data: recentInvoices = [], isLoading: isRecentLoading } =
+    useRecentInvoicesQuery();
+  const { data: dailyStats, isLoading: isStatsLoading } =
+    useDailyInvoiceStatsQuery();
 
   const handleRefresh = () => {
     queryClient.invalidateQueries({ queryKey: ["invoices"] });
@@ -89,7 +131,7 @@ export default function Dashboard() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#FBF7F0] dark:bg-[#0F1110]">
+    <SafeAreaView className="flex-1 bg-base dark:bg-base-dark">
       <ScrollView
         className="flex-1"
         contentContainerClassName="px-6 pb-32"
@@ -97,19 +139,23 @@ export default function Dashboard() {
       >
         <View className="mt-4 flex-row items-center justify-between">
           <View>
-            <Text className="text-[13px] text-[#6B6257] dark:text-[#A79B8B]">
+            <Text className="text-[13px] text-muted dark:text-muted-dark">
               Welcome back
             </Text>
-            <Text className="mt-1 text-[24px] font-semibold text-[#1E1B16] dark:text-[#F5F1EA]">
-              {me?.name ?? "Welcome"}
-            </Text>
+            {isUserLoading ? (
+              <SkeletonBlock height={24} width={160} className="mt-2" />
+            ) : (
+              <Text className="mt-1 text-[24px] font-semibold text-ink dark:text-ink-dark">
+                {me?.name ?? "Welcome"}
+              </Text>
+            )}
           </View>
           <View className="flex-row items-center">
             <Pressable
-              className="mr-2 rounded-full bg-[#E4F1EC] px-3 py-2 dark:bg-[#1F2E2A]"
+              className="mr-2 rounded-full bg-accent px-3 py-2 dark:bg-accent-dark"
               onPress={handleRefresh}
             >
-              <Text className="text-xs font-semibold text-[#1F6C55] dark:text-[#8DDAC6]">
+              <Text className="text-xs font-semibold text-accent-ink dark:text-accent-ink-dark">
                 Refresh
               </Text>
             </Pressable>
@@ -121,50 +167,57 @@ export default function Dashboard() {
           </View>
         </View>
 
-        <View className="mt-6 rounded-[26px] bg-[#c7a052] p-5 overflow-hidden dark:bg-[#1A1B1A]">
-          <View className="absolute -right-8 -top-10 h-28 w-28 rounded-full bg-[#F4D79B] dark:bg-[#5B4A1D]" />
-          <Text className="text-[13px] text-[#6B6257] dark:text-[#A79B8B]">
+        <View className="mt-6 rounded-[26px] bg-[#408b84] p-5 overflow-hidden dark:bg-[#1A1B1A]">
+          <View className="absolute -right-8 -top-10 h-28 w-28 rounded-full bg-[#0B6A63] dark:bg-[#1F2E2A]" />
+          <Text className="text-[13px] text-white dark:text-muted-dark">
             Today sales
           </Text>
-          <Text className="mt-2 text-[28px] font-semibold text-[#1E1B16] dark:text-[#F5F1EA]">
-            {dailyStats ? formatCurrency(dailyStats.total_amount) : "--"}
-          </Text>
+          {isStatsLoading ? (
+            <SkeletonBlock height={28} width={180} className="mt-2" />
+          ) : (
+            <Text className="mt-2 text-[28px] font-semibold text-white dark:text-ink-dark">
+              {dailyStats ? formatCurrency(dailyStats.total_amount) : "--"}
+            </Text>
+          )}
           <View className="mt-4 flex-row items-center justify-between">
-            <View className="flex-1 rounded-2xl bg-white px-4 py-3 dark:bg-[#1F2321]">
-              <Text className="text-[12px] text-[#6B6257] dark:text-[#A79B8B]">
+            <View className="flex-1 rounded-2xl bg-card px-4 py-3 dark:bg-card-dark">
+              <Text className="text-[12px] text-muted dark:text-muted-dark">
                 Transactions
               </Text>
-              <Text className="mt-1 text-[18px] font-semibold text-[#1E1B16] dark:text-[#F5F1EA]">
-                {dailyStats?.invoice_count ?? "--"}
-              </Text>
+              {isStatsLoading ? (
+                <SkeletonBlock height={18} width={60} className="mt-2" />
+              ) : (
+                <Text className="mt-1 text-[18px] font-semibold text-ink dark:text-ink-dark">
+                  {dailyStats?.invoice_count ?? "--"}
+                </Text>
+              )}
             </View>
-            <View className="mx-3 flex-1 rounded-2xl bg-white px-4 py-3 dark:bg-[#1F2321]">
-              <Text className="text-[12px] text-[#6B6257] dark:text-[#A79B8B]">
+            <View className="mx-3 flex-1 rounded-2xl bg-card px-4 py-3 dark:bg-card-dark">
+              <Text className="text-[12px] text-muted dark:text-muted-dark">
                 Avg ticket
               </Text>
-              <Text className="mt-1 text-[18px] font-semibold text-[#1E1B16] dark:text-[#F5F1EA]">
-                {dailyStats
-                  ? formatCurrency(
-                      dailyStats.total_amount /
-                        Math.max(dailyStats.invoice_count, 1),
-                    )
-                  : "--"}
-              </Text>
+              {isStatsLoading ? (
+                <SkeletonBlock height={18} width={90} className="mt-2" />
+              ) : (
+                <Text className="mt-1 text-[18px] font-semibold text-ink dark:text-ink-dark">
+                  {dailyStats
+                    ? formatCurrency(
+                        dailyStats.total_amount /
+                          Math.max(dailyStats.invoice_count, 1)
+                      )
+                    : "--"}
+                </Text>
+              )}
             </View>
-          </View>
-          <View className="absolute right-4 top-5 rounded-full bg-[#816B2C] px-3 py-1 dark:bg-[#3F3416]">
-            <Text className="text-xs font-semibold text-[#F4E9C7] dark:text-[#F3E6BE]">
-              +12%
-            </Text>
           </View>
         </View>
 
         <View className="mt-7 flex-row items-center justify-between">
-          <Text className="text-[16px] font-semibold text-[#1E1B16] dark:text-[#F5F1EA]">
+          <Text className="text-[16px] font-semibold text-ink dark:text-ink-dark">
             Quick actions
           </Text>
-          <View className="rounded-full bg-[#E4F1EC] px-3 py-1 dark:bg-[#1F2E2A]">
-            <Text className="text-xs font-semibold text-[#1F6C55] dark:text-[#8DDAC6]">
+          <View className="rounded-full bg-accent px-3 py-1 dark:bg-accent-dark">
+            <Text className="text-xs font-semibold text-accent-ink dark:text-accent-ink-dark">
               Live
             </Text>
           </View>
@@ -174,44 +227,60 @@ export default function Dashboard() {
           {quickActions.map((action) => (
             <Pressable
               key={action.title}
-              className="mb-4 w-[30%] rounded-2xl border border-[#E3D7C7] bg-white px-4 py-5 dark:border-[#2B2F2C] dark:bg-[#1F2321]"
               onPress={() => router.push(action.route)}
+              className="mb-4 w-[24%] rounded-2xl bg-card px-4 py-5 items-center shadow-sm dark:bg-[#1A1B1A]"
             >
               <ActionIcon type={action.icon} />
-              <Text className="mt-3 text-[13px] text-[#6B6257] dark:text-[#A79B8B]">
+              <Text className="mt-3 text-[13px] font-medium text-ink text-center dark:text-white">
                 {action.title}
               </Text>
             </Pressable>
           ))}
         </View>
 
-        <View className="mt-1 border-t border-[#E6DBC9] pt-5 dark:border-[#2B2F2C]">
-          <Text className="text-[16px] font-semibold text-[#1E1B16] dark:text-[#F5F1EA]">
+        <View className="mt-1 border-t border-line pt-5 dark:border-line-dark">
+          <Text className="text-[16px] font-semibold text-ink dark:text-ink-dark">
             Recent sales
           </Text>
           <View className="mt-4">
-            {recentInvoices.map((invoice) => (
-              <View
-                key={invoice.invoice_id}
-                className="mb-3 rounded-2xl border border-[#E3D7C7] bg-white px-4 py-4 dark:border-[#2B2F2C] dark:bg-[#1F2321]"
-              >
-                <View className="flex-row items-center justify-between">
-                  <Text className="text-[14px] font-semibold text-[#1E1B16] dark:text-[#F5F1EA]">
-                    {invoice.invoice_id}
-                  </Text>
-                  <Text className="text-[14px] font-semibold text-[#F97316] dark:text-[#F59E0B]">
-                    {formatCurrency(invoice.total_amount)}
+            {isRecentLoading ? (
+              <>
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <View
+                    key={`skeleton-${index}`}
+                    className="mb-3 rounded-2xl border border-line bg-card px-4 py-4 dark:border-line-dark dark:bg-card-dark"
+                  >
+                    <View className="flex-row items-center justify-between">
+                      <SkeletonBlock height={14} width={90} />
+                      <SkeletonBlock height={14} width={70} />
+                    </View>
+                    <SkeletonBlock height={12} width={140} className="mt-3" />
+                  </View>
+                ))}
+              </>
+            ) : (
+              recentInvoices.map((invoice) => (
+                <View
+                  key={invoice.invoice_id}
+                  className="mb-3 rounded-2xl border border-line bg-card px-4 py-4 dark:border-line-dark dark:bg-card-dark"
+                >
+                  <View className="flex-row items-center justify-between">
+                    <Text className="text-[14px] font-semibold text-ink dark:text-ink-dark">
+                      {invoice.invoice_id}
+                    </Text>
+                    <Text className="text-[14px] font-semibold text-[#F97316] dark:text-[#F59E0B]">
+                      {formatCurrency(invoice.total_amount)}
+                    </Text>
+                  </View>
+                  <Text className="mt-2 text-[12px] text-muted dark:text-muted-dark">
+                    {new Date(invoice.date).toLocaleString()}
                   </Text>
                 </View>
-                <Text className="mt-2 text-[12px] text-[#6B6257] dark:text-[#A79B8B]">
-                  {new Date(invoice.date).toLocaleString()}
-                </Text>
-              </View>
-            ))}
+              ))
+            )}
           </View>
         </View>
       </ScrollView>
-
     </SafeAreaView>
   );
 }

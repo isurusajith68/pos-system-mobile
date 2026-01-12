@@ -31,6 +31,11 @@ export function setAuthToken(token: string | null) {
 api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
+    const method = error.config?.method?.toUpperCase() ?? "UNKNOWN";
+    const url = error.config?.url ?? "unknown-url";
+    const statusCode = error.response?.status ?? "no-status";
+    console.error(`[api] ${method} ${url} -> ${statusCode}`);
+
     const status = error.response?.status;
     const originalRequest = error.config as AxiosRequestConfig & {
       _retry?: boolean;

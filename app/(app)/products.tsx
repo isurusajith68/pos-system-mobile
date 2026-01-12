@@ -3,12 +3,12 @@ import { Text, View } from "react-native";
 
 export default function Products() {
   return (
-    <SafeAreaView className="flex-1 bg-[#FBF7F0] dark:bg-[#0F1110]">
+    <SafeAreaView className="flex-1 bg-base dark:bg-base-dark">
       <View className="flex-1 items-center justify-center px-6">
-        <Text className="text-[20px] font-semibold text-[#1E1B16] dark:text-[#F5F1EA]">
+        <Text className="text-[20px] font-semibold text-ink dark:text-ink-dark">
           Products
         </Text>
-        <Text className="mt-2 text-[14px] text-[#6B6257] dark:text-[#A79B8B]">
+        <Text className="mt-2 text-[14px] text-muted dark:text-muted-dark">
           Manage items, pricing, and categories.
         </Text>
       </View>

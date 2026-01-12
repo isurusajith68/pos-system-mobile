@@ -23,6 +23,10 @@ export type AuthResponse = AuthUser & {
   refreshToken: string;
 };
 
+export type ValidateResponse = AuthUser & {
+  valid: boolean;
+};
+
 export function useLoginMutation() {
   return useMutation({
     mutationFn: async (payload: LoginPayload) => {
@@ -40,6 +44,15 @@ export function useRefreshTokenMutation() {
         { refreshToken },
         { headers: { "x-skip-auth-refresh": "true" } },
       );
+      return response.data;
+    },
+  });
+}
+
+export function useValidateTokenMutation() {
+  return useMutation({
+    mutationFn: async () => {
+      const response = await api.post<ValidateResponse>("/auth/validate");
       return response.data;
     },
   });

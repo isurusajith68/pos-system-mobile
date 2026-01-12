@@ -1,39 +1,47 @@
-import { useRouter } from "expo-router";
 import { useState } from "react";
+import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
 import { useAuth } from "../../src/context/AuthContext";
+import { getApiErrorMessage } from "../../src/services/api";
 
 export default function Index() {
-  const router = useRouter();
   const { login, isLoading, error } = useAuth();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("test2@gmail.com");
+  const [password, setPassword] = useState("123456");
   const [formError, setFormError] = useState<string | null>(null);
 
+  const isValidEmail = (value: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
   const handleSignIn = async () => {
-    if (!email.trim() || !password.trim()) {
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+
+    if (!trimmedEmail || !trimmedPassword) {
       setFormError("Email and password are required.");
+      return;
+    }
+
+    if (!isValidEmail(trimmedEmail)) {
+      setFormError("Enter a valid email address.");
+      return;
+    }
+
+    if (trimmedPassword.length < 6) {
+      setFormError("Password must be at least 6 characters.");
       return;
     }
 
     setFormError(null);
     try {
-      await login({ email: email.trim(), password: password.trim() });
-      router.replace("/dashboard");
-    } catch {
-      // Error is handled by context state.
+      await login({ email: trimmedEmail, password: trimmedPassword });
+    } catch (err) {
+      setFormError(getApiErrorMessage(err));
     }
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#FBF7F0] dark:bg-[#0F1110]">
+    <SafeAreaView className="flex-1 bg-base dark:bg-base-dark">
       <ScrollView
         className="flex-1"
         contentContainerClassName="px-6 pb-12"
@@ -47,20 +55,20 @@ export default function Index() {
               Zentra POS
             </Text>
           </View>
-          <Text className="mt-5 text-[26px] font-semibold leading-8 text-[#1E1B16] dark:text-[#F5F1EA]">
+          <Text className="mt-5 text-[26px] font-semibold leading-8 text-ink dark:text-ink-dark">
             Fresh start for your{"\n"}store
           </Text>
-          <Text className="mt-3 text-[15px] leading-6 text-[#6B6257] dark:text-[#A79B8B]">
+          <Text className="mt-3 text-[15px] leading-6 text-muted dark:text-muted-dark">
             Sign in to sync sales, inventory, and daily reports.
           </Text>
         </View>
 
         <View className="mt-8">
-          <Text className="text-sm font-medium text-[#6B6257] dark:text-[#A79B8B]">
+          <Text className="text-sm font-medium text-muted dark:text-muted-dark">
             Email
           </Text>
           <TextInput
-            className="mt-2 rounded-2xl border border-[#E3D7C7] bg-white px-4 py-3 text-[15px] text-[#1E1B16] dark:border-[#2B2F2C] dark:bg-[#1F2321] dark:text-[#F5F1EA]"
+            className="mt-2 rounded-2xl border border-line bg-card px-4 py-3 text-[15px] text-ink dark:border-line-dark dark:bg-card-dark dark:text-ink-dark"
             placeholder="demo@zentra.com"
             placeholderTextColor="#A79B8B"
             autoCapitalize="none"
@@ -71,11 +79,11 @@ export default function Index() {
         </View>
 
         <View className="mt-5">
-          <Text className="text-sm font-medium text-[#6B6257] dark:text-[#A79B8B]">
+          <Text className="text-sm font-medium text-muted dark:text-muted-dark">
             Password
           </Text>
           <TextInput
-            className="mt-2 rounded-2xl border border-[#E3D7C7] bg-white px-4 py-3 text-[15px] text-[#1E1B16] dark:border-[#2B2F2C] dark:bg-[#1F2321] dark:text-[#F5F1EA]"
+            className="mt-2 rounded-2xl border border-line bg-card px-4 py-3 text-[15px] text-ink dark:border-line-dark dark:bg-card-dark dark:text-ink-dark"
             placeholder="********"
             placeholderTextColor="#A79B8B"
             secureTextEntry
@@ -83,11 +91,11 @@ export default function Index() {
             onChangeText={setPassword}
           />
           <View className="mt-3 flex-row items-center justify-between">
-            <Text className="text-[13px] text-[#6B6257] dark:text-[#A79B8B]">
+            <Text className="text-[13px] text-muted dark:text-muted-dark">
               Forgot password?
             </Text>
-            <Pressable className="rounded-full bg-[#E4F1EC] px-3 py-1 dark:bg-[#1F2E2A]">
-              <Text className="text-xs font-semibold text-[#1F6C55] dark:text-[#8DDAC6]">
+            <Pressable className="rounded-full bg-accent px-3 py-1 dark:bg-accent-dark">
+              <Text className="text-xs font-semibold text-accent-ink dark:text-accent-ink-dark">
                 Reset
               </Text>
             </Pressable>
@@ -95,7 +103,7 @@ export default function Index() {
         </View>
 
         <Pressable
-          className="mt-6 rounded-2xl bg-[#0E6B5B] py-4 shadow-lg dark:bg-[#2C8C7A]"
+          className="mt-6 rounded-2xl bg-primary py-4 shadow-lg dark:bg-primary-dark"
           onPress={handleSignIn}
           disabled={isLoading}
         >
@@ -113,7 +121,7 @@ export default function Index() {
         )}
 
         <View className="mt-4">
-          <Text className="text-[13px] text-[#6B6257] dark:text-[#A79B8B]">
+          <Text className="text-[13px] text-muted dark:text-muted-dark">
             Last sync 2 minutes ago
           </Text>
         </View>

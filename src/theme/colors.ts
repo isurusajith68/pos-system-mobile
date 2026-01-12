@@ -1,0 +1,18 @@
+export const colors = {
+  base: "#FBF7F0",
+  baseDark: "#0F1110",
+  card: "#FFFFFF",
+  cardDark: "#1F2321",
+  line: "#E4F1EC",
+  lineDark: "#2B2F2C",
+  ink: "#1E1B16",
+  inkDark: "#F5F1EA",
+  muted: "#6B6257",
+  mutedDark: "#A79B8B",
+  primary: "#0E6B5B",
+  primaryDark: "#2C8C7A",
+  accent: "#E4F1EC",
+  accentDark: "#1F2E2A",
+  accentInk: "#1F6C55",
+  accentInkDark: "#8DDAC6",
+};
