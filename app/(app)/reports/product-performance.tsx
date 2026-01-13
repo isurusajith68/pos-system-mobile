@@ -70,18 +70,21 @@ export default function ProductPerformanceReport() {
     () => Dimensions.get("window").width - 48,
     []
   );
-  const chartData = useMemo(
-    () =>
-      topProducts.map((item, index) => ({
-        name: item.product_name,
-        value: item.sales_amount ?? 0,
-        quantity: item.quantity_sold ?? 0,
-        color: chartColors[index % chartColors.length],
-        legendFontColor: isDark ? "#A79B8B" : "#6B6257",
-        legendFontSize: 11,
-      })),
-    [topProducts, isDark]
-  );
+  const chartData = useMemo(() => {
+    return topProducts
+      .map((item, index) => {
+        const value = Math.max(0, Number(item.sales_amount ?? 0));
+        return {
+          name: item.product_name,
+          value: Number.isNaN(value) ? 0 : value,
+          quantity: item.quantity_sold ?? 0,
+          color: chartColors[index % chartColors.length],
+          legendFontColor: isDark ? "#A79B8B" : "#6B6257",
+          legendFontSize: 11,
+        };
+      })
+      .filter((item) => item.value > 0);
+  }, [topProducts, isDark]);
 
   const handleShare = async () => {
     const title = "Product performance report";
@@ -190,7 +193,6 @@ export default function ProductPerformanceReport() {
           contentContainerClassName="pb-32"
           showsVerticalScrollIndicator={false}
         >
-          {" "}
           <View className="mt-4 rounded-2xl border border-line bg-card px-4 py-4 dark:border-line-dark dark:bg-card-dark">
             <Text className="text-[14px] font-semibold text-ink dark:text-ink-dark">
               Best sellers (Top 10)
@@ -209,7 +211,7 @@ export default function ProductPerformanceReport() {
                     accessor="value"
                     backgroundColor="transparent"
                     hasLegend={false}
-                    center={[Math.floor((chartWidth - 200) / 2), 0]}
+                    center={[Math.max(0, Math.floor((chartWidth - 200) / 2)), 0]}
                     paddingLeft="0"
                     chartConfig={{
                       color: (opacity = 1) =>

@@ -237,7 +237,7 @@ export default function Inventory() {
           </View>
         </View>
 
-        <View className="mt-2 flex-row items-center rounded-2xl border border-line bg-card px-3 py-1 dark:border-line-dark dark:bg-card-dark">
+        <View className="mt-2 flex-row items-center rounded-2xl border border-line bg-accent px-3 py-1 dark:border-line-dark dark:bg-accent-dark">
           <TextInput
             className="flex-1 text-[15px] text-ink dark:text-ink-dark"
             placeholder="Search inventory"

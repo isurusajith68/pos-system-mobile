@@ -10,7 +10,6 @@ import { useDailyInvoiceStatsQuery } from "../../src/services/invoices/stats";
 import { useUserMeQuery } from "../../src/services/users/queries";
 
 const quickActions = [
-  { title: "Sales", icon: "receipt", route: "/sale" },
   { title: "Products", icon: "tag", route: "/products" },
   { title: "Inventory", icon: "box", route: "/inventory" },
   { title: "PO", icon: "doc", route: "/purchase-order" },
@@ -231,7 +230,7 @@ export default function Dashboard() {
             <Pressable
               key={action.title}
               onPress={() => router.push(action.route)}
-              className="mb-4 w-[48%] rounded-2xl bg-card px-4 py-5 overflow-hidden items-center shadow-sm dark:bg-[#1A1B1A]"
+              className="mb-4 w-[32%] rounded-2xl bg-card px-4 py-5 overflow-hidden items-center shadow-sm dark:bg-[#1A1B1A]"
             >
               <View className="absolute -right-6 -top-6 h-16 w-16 rounded-full bg-accent opacity-70 dark:bg-accent-dark" />
               <ActionIcon type={action.icon} />
