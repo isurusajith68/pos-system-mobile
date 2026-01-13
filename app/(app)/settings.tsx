@@ -1,6 +1,6 @@
 import { useColorScheme } from "nativewind";
 import { useEffect, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../src/context/AuthContext";
 import { useSubscriptionsQuery } from "../../src/services/subscriptions/queries";
@@ -48,7 +48,11 @@ export default function Settings() {
 
   return (
     <SafeAreaView className="flex-1 bg-base dark:bg-base-dark">
-      <View className="flex-1 px-6 pt-10">
+      <ScrollView
+        className="flex-1"
+        contentContainerClassName="px-6 pt-10 pb-24"
+        showsVerticalScrollIndicator={false}
+      >
         <Text className="text-[22px] font-semibold text-ink dark:text-ink-dark">
           Settings
         </Text>
@@ -177,7 +181,30 @@ export default function Settings() {
             </Pressable>
           </View>
         </View>
-      </View>
+
+        <View className="mt-10 items-center px-4">
+          <Text className="text-center text-[12px] text-muted dark:text-muted-dark">
+            © 2025 Zentra. All rights reserved.
+          </Text>
+          <View className="mt-4 items-center">
+            <Text className="text-[11px] text-muted dark:text-muted-dark">
+              Developer Contact:
+            </Text>
+            <Text className="text-[11px] text-muted dark:text-muted-dark">
+              For support, reach out at:
+            </Text>
+            <Text className="mt-1 text-[13px] font-semibold text-primary dark:text-primary-dark">
+              isurusajith.dev@gmail.com
+            </Text>
+            <Text className="mt-1 text-[11px] text-muted dark:text-muted-dark">
+              Or call:{" "}
+              <Text className="text-primary dark:text-primary-dark">
+                076-528-0144
+              </Text>
+            </Text>
+          </View>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
