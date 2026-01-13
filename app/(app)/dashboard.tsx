@@ -263,7 +263,10 @@ export default function Dashboard() {
                   <SkeletonBlock height={12} width={140} className="mt-3" />
                 </View>
               ) : (
-                <View className="mb-3 rounded-2xl border border-line bg-card px-4 py-4 dark:border-line-dark dark:bg-card-dark">
+                <Pressable
+                  onPress={() => router.push(`/sale/${item.invoice_id}`)}
+                  className="mb-3 rounded-2xl border border-line bg-card px-4 py-4 dark:border-line-dark dark:bg-card-dark"
+                >
                   <View className="flex-row items-center justify-between">
                     <Text className="text-[14px] font-semibold text-ink dark:text-ink-dark">
                       {item.invoice_id}
@@ -272,10 +275,15 @@ export default function Dashboard() {
                       {formatCurrency(item.total_amount)}
                     </Text>
                   </View>
-                  <Text className="mt-2 text-[12px] text-muted dark:text-muted-dark">
-                    {new Date(item.date).toLocaleString()}
-                  </Text>
-                </View>
+                  <View className="mt-2 flex-row items-center justify-between">
+                    <Text className="text-[12px] text-muted dark:text-muted-dark">
+                      {new Date(item.date).toLocaleString()}
+                    </Text>
+                    <Text className="text-[12px] text-muted dark:text-muted-dark">
+                      Items {"items_count" in item ? item.items_count : 0}
+                    </Text>
+                  </View>
+                </Pressable>
               )
             }
           />

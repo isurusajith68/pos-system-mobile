@@ -188,7 +188,7 @@ export default function Products() {
                 router.replace("/dashboard");
               }}
             >
-              <Text className="text-[18px] text-ink dark:text-ink-dark">&lt;</Text>
+              <Text className="text-[18px] text-ink dark:text-ink-dark">←</Text>
             </Pressable>
             <View>
               <Text className="text-[22px] font-semibold text-ink dark:text-ink-dark">
@@ -253,7 +253,7 @@ export default function Products() {
             ].map((item) => (
               <View
                 key={item.label}
-                className="mb-3 w-[24%] rounded-2xl border border-line bg-card px-4 py-4 dark:border-line-dark dark:bg-card-dark"
+                className="mb-3 w-[24%] rounded-2xl border border-line bg-accent px-4 py-4 dark:border-line-dark dark:bg-accent-dark"
               >
                 <Text className="text-[12px] text-muted dark:text-muted-dark">
                   {item.label}
@@ -311,9 +311,7 @@ export default function Products() {
                       : "border-line bg-card dark:border-line-dark dark:bg-card-dark"
                   }`}
                   onPress={() =>
-                    setStockFilter(
-                      item.value as "all" | "in" | "low" | "out"
-                    )
+                    setStockFilter(item.value as "all" | "in" | "low" | "out")
                   }
                 >
                   <Text
@@ -405,11 +403,19 @@ export default function Products() {
                     <View className="flex-row items-center justify-between">
                       <View className="flex-1 pr-3">
                         <SkeletonBlock height={14} width={160} />
-                        <SkeletonBlock height={12} width={110} className="mt-2" />
+                        <SkeletonBlock
+                          height={12}
+                          width={110}
+                          className="mt-2"
+                        />
                       </View>
                       <View className="items-end">
                         <SkeletonBlock height={14} width={70} />
-                        <SkeletonBlock height={20} width={80} className="mt-2" />
+                        <SkeletonBlock
+                          height={20}
+                          width={80}
+                          className="mt-2"
+                        />
                       </View>
                     </View>
                   </View>
