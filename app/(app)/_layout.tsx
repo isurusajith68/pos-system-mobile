@@ -52,12 +52,11 @@ export default function AppLayout() {
           ),
         }}
       />
-      <Tabs.Screen
-        name="products"
+      <Tabs.Screen name="sale" 
         options={{
-          title: "Products",
+          title: "Sales",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="pricetag-outline" size={size} color={color} />
+            <Ionicons name="cart-outline" size={size} color={color} />
           ),
         }}
       />
@@ -79,11 +78,19 @@ export default function AppLayout() {
           ),
         }}
       />
-      <Tabs.Screen name="sale" options={{ href: null }} />
+      <Tabs.Screen name="products" options={{ href: null }} />
       <Tabs.Screen name="inventory" options={{ href: null }} />
       <Tabs.Screen name="purchase-order" options={{ href: null }} />
       <Tabs.Screen name="products/[id]" options={{ href: null }} />
       <Tabs.Screen name="sale/[id]" options={{ href: null }} />
+      <Tabs.Screen name="purchase-order/[id]" options={{ href: null }} />
+      <Tabs.Screen name="reports/sales-summary" options={{ href: null }} />
+      <Tabs.Screen
+        name="reports/product-performance" options={{ href: null }}
+      />
+      <Tabs.Screen name="reports/customer-insights" options={{ href: null }} />
+      <Tabs.Screen name="reports/employee-sales" options={{ href: null }} />
+
     </Tabs>
   );
 }

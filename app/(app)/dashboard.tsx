@@ -231,8 +231,9 @@ export default function Dashboard() {
             <Pressable
               key={action.title}
               onPress={() => router.push(action.route)}
-              className="mb-4 w-[24%] rounded-2xl bg-card px-4 py-5 items-center shadow-sm dark:bg-[#1A1B1A]"
+              className="mb-4 w-[48%] rounded-2xl bg-card px-4 py-5 overflow-hidden items-center shadow-sm dark:bg-[#1A1B1A]"
             >
+              <View className="absolute -right-6 -top-6 h-16 w-16 rounded-full bg-accent opacity-70 dark:bg-accent-dark" />
               <ActionIcon type={action.icon} />
               <Text className="mt-3 text-[13px] font-medium text-ink text-center dark:text-white">
                 {action.title}
