@@ -271,9 +271,13 @@ export default function Dashboard() {
                     <Text className="text-[14px] font-semibold text-ink dark:text-ink-dark">
                       {item.invoice_id}
                     </Text>
-                    <Text className="text-[14px] font-semibold text-[#F97316] dark:text-[#F59E0B]">
-                      {formatCurrency(item.total_amount)}
-                    </Text>
+                    {item.refund_invoice_id ? (
+                      <View className="rounded-full bg-[#FCEAEA] px-2.5 py-1 dark:bg-[#2B1B1B]">
+                        <Text className="text-[10px] font-semibold text-[#9B2C2C] dark:text-[#F29B9B]">
+                          Refunded
+                        </Text>
+                      </View>
+                    ) : null}
                   </View>
                   <View className="mt-2 flex-row items-center justify-between">
                     <Text className="text-[12px] text-muted dark:text-muted-dark">

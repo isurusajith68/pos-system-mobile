@@ -148,6 +148,13 @@ export default function SaleDetails() {
               <Text className="mt-1 text-[12px] text-muted dark:text-muted-dark">
                 {data.customer_name ?? "Walk-in customer"}
               </Text>
+              {data.refund_invoice_id ? (
+                <View className="mt-3 self-start rounded-full bg-[#FCEAEA] px-2.5 py-1 dark:bg-[#2B1B1B]">
+                  <Text className="text-[10px] font-semibold text-[#9B2C2C] dark:text-[#F29B9B]">
+                    Refunded
+                  </Text>
+                </View>
+              ) : null}
             </View>
 
             <View className="mt-4 flex-row flex-wrap justify-between">
