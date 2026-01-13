@@ -1,8 +1,9 @@
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useRef } from "react";
 import { Animated, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSalesInvoiceQuery } from "../../../src/services/invoices/queries";
+import { BackButton } from "../../../components/BackButton";
 
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat("en-LK", {
@@ -60,7 +61,6 @@ function SkeletonBlock({
 }
 
 export default function SaleDetails() {
-  const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const invoiceId = useMemo(() => (Array.isArray(id) ? id[0] : id), [id]);
   const { data, isLoading, error } = useSalesInvoiceQuery(invoiceId);
@@ -70,18 +70,7 @@ export default function SaleDetails() {
       <Stack.Screen options={{ title: "Sale details", headerShown: false }} />
       <View className="px-6 pt-4">
         <View className="flex-row items-center">
-          <Pressable
-            className="mr-3 h-10 w-10 items-center justify-center rounded-full border border-line bg-card dark:border-line-dark dark:bg-card-dark"
-            onPress={() => {
-              // if (router.canGoBack()) {
-              //   router.back();
-              //   return;
-              // }
-              router.replace("/sale");
-            }}
-          >
-            <Text className="text-[18px] text-ink dark:text-ink-dark">←</Text>
-          </Pressable>
+            <BackButton fallbackRoute="/sale" />
           <View>
             <Text className="text-[22px] font-semibold text-ink dark:text-ink-dark">
               Sale details
@@ -226,7 +215,7 @@ export default function SaleDetails() {
                         "Custom item"}
                     </Text>
                     <Text className="mt-1 text-[12px] text-muted dark:text-muted-dark">
-                      Qty {detail.quantity} � {formatText(detail.unit)}
+                      Qty {detail.quantity} x {formatText(detail.unit)}
                     </Text>
                     <Text className="mt-2 text-[12px] text-muted dark:text-muted-dark">
                       Unit {formatCurrency(detail.unit_price)}

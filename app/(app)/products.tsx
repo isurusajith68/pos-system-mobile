@@ -1,3 +1,6 @@
+import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "expo-router";
+import { useColorScheme } from "nativewind";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Animated,
@@ -9,16 +12,13 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useColorScheme } from "nativewind";
-import { useRouter } from "expo-router";
-import { useQueryClient } from "@tanstack/react-query";
+import { BackButton } from "../../components/BackButton";
 import { useCategoriesQuery } from "../../src/services/categories/queries";
 import {
   Product,
   useProductsQuery,
   useProductStatsQuery,
 } from "../../src/services/products/queries";
-
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat("en-LK", {
     style: "currency",
@@ -79,9 +79,9 @@ export default function Products() {
   const [search, setSearch] = useState("");
   const [categoryId, setCategoryId] = useState<string | null>(null);
   const [threshold, setThreshold] = useState(10);
-  const [stockFilter, setStockFilter] = useState<
-    "all" | "in" | "low" | "out"
-  >("all");
+  const [stockFilter, setStockFilter] = useState<"all" | "in" | "low" | "out">(
+    "all"
+  );
   const [page, setPage] = useState(1);
   const [productList, setProductList] = useState<Product[]>([]);
   const limit = 20;
@@ -143,7 +143,7 @@ export default function Products() {
             </Text>
           </View>
           <View className="items-end">
-            <Text className="text-[14px] font-semibold text-ink dark:text-ink-dark">
+            <Text className="text-[14px] font-semibold text-[#F97316] dark:text-[#F59E0B]">
               {price}
             </Text>
             <View
@@ -178,18 +178,7 @@ export default function Products() {
       <View className="flex-1 px-6">
         <View className="mt-4">
           <View className="flex-row items-center">
-            <Pressable
-              className="mr-3 h-10 w-10 items-center justify-center rounded-full border border-line bg-card dark:border-line-dark dark:bg-card-dark"
-              onPress={() => {
-                if (router.canGoBack()) {
-                  router.back();
-                  return;
-                }
-                router.replace("/dashboard");
-              }}
-            >
-              <Text className="text-[18px] text-ink dark:text-ink-dark">←</Text>
-            </Pressable>
+            <BackButton fallbackRoute="/dashboard" />
             <View>
               <Text className="text-[22px] font-semibold text-ink dark:text-ink-dark">
                 Products
@@ -266,7 +255,7 @@ export default function Products() {
           </View>
         </View>
 
-        <View className="mt-2 flex-row items-center rounded-2xl border border-line bg-card px-3 py-1 dark:border-line-dark dark:bg-card-dark">
+        <View className="mt-2 flex-row items-center rounded-2xl border border-line bg-accent px-3 py-1 dark:border-line-dark dark:bg-accent-dark">
           <TextInput
             className="flex-1 text-[15px] text-ink dark:text-ink-dark"
             placeholder="Search products"

@@ -1,9 +1,10 @@
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useRef } from "react";
 import { Animated, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useColorScheme } from "nativewind";
 import { useProductQuery } from "../../../src/services/products/queries";
+import { BackButton } from "../../../components/BackButton";
 
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat("en-LK", {
@@ -17,6 +18,9 @@ const formatNumber = (value?: number | null) =>
 
 const formatText = (value?: string | null) =>
   value && value.trim().length > 0 ? value : "--";
+
+const formatShortId = (value?: string | null) =>
+  value && value.trim().length > 0 ? `#${value.slice(-8)}` : "--";
 
 function SkeletonBlock({
   width,
@@ -67,7 +71,6 @@ function SkeletonBlock({
 
 export default function ProductDetails() {
   const { id } = useLocalSearchParams<{ id?: string }>();
-  const router = useRouter();
   const productId = useMemo(() => (Array.isArray(id) ? id[0] : id), [id]);
   const { data, isLoading, error } = useProductQuery(productId);
 
@@ -78,18 +81,7 @@ export default function ProductDetails() {
       />
       <View className="px-6 pt-4 pb-2">
         <View className="flex-row items-center">
-          <Pressable
-            className="mr-3 h-10 w-10 items-center justify-center rounded-full border border-line bg-card dark:border-line-dark dark:bg-card-dark"
-            onPress={() => {
-              // if (router.canGoBack()) {
-              //   router.back();
-              //   return;
-              // }
-              router.replace("/products");
-            }}
-          >
-            <Text className="text-[18px] text-ink dark:text-ink-dark">←</Text>
-          </Pressable>
+            <BackButton fallbackRoute="/products" />
           <View>
             <Text className="text-[22px] font-semibold text-ink dark:text-ink-dark">
               Product details
@@ -284,7 +276,7 @@ export default function ProductDetails() {
                   Product ID
                 </Text>
                 <Text className="text-[12px] font-semibold text-ink dark:text-ink-dark">
-                  {data.product_id}
+                  {formatShortId(data.product_id)}
                 </Text>
               </View>
               <View className="mt-2 flex-row items-center justify-between">
@@ -308,7 +300,7 @@ export default function ProductDetails() {
                   Category ID
                 </Text>
                 <Text className="text-[12px] font-semibold text-ink dark:text-ink-dark">
-                  {formatText(data.category_id)}
+                  {formatShortId(data.category_id)}
                 </Text>
               </View>
             </View>

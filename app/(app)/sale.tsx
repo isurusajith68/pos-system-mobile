@@ -11,6 +11,8 @@ import {
   useSalesInvoicesQuery,
   useSalesSummaryQuery,
 } from "../../src/services/invoices/queries";
+import { SkeletonBlock } from "../../components/SkeletonBlock";
+import { BackButton } from "../../components/BackButton";
 
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat("en-LK", {
@@ -112,14 +114,13 @@ export default function Sale() {
           </View>
         </View>
         <View className="items-end">
-          <Text className="text-[14px] font-semibold text-ink dark:text-ink-dark">
+          <Text className="text-[14px] font-semibold text-[#F97316] dark:text-[#F59E0B]">
             {formatCurrency(item.total_amount)}
           </Text>
           <Text className="mt-1 text-[12px] text-muted dark:text-muted-dark">
             Items {item.sales_details?.length ?? 0}
           </Text>
         </View>
-      
       </View>
     </Pressable>
   );
@@ -149,18 +150,7 @@ export default function Sale() {
       <View className="flex-1 px-6">
         <View className="mt-4">
           <View className="flex-row items-center">
-            <Pressable
-              className="mr-3 h-10 w-10 items-center justify-center rounded-full border border-line bg-card dark:border-line-dark dark:bg-card-dark"
-              onPress={() => {
-                if (router.canGoBack()) {
-                  router.back();
-                  return;
-                }
-                router.replace("/dashboard");
-              }}
-            >
-              <Text className="text-[18px] text-ink dark:text-ink-dark">←</Text>
-            </Pressable>
+            <BackButton fallbackRoute="/dashboard" />
             <View>
               <Text className="text-[22px] font-semibold text-ink dark:text-ink-dark">
                 Sales
@@ -204,7 +194,7 @@ export default function Sale() {
             </View>
           </View>
         </View>
-        <View className="mt-5 flex-row items-center rounded-2xl border border-line bg-card px-3 py-1 dark:border-line-dark dark:bg-card-dark">
+        <View className="mt-5 flex-row items-center rounded-2xl border border-line bg-accent px-3 py-1 dark:border-line-dark dark:bg-accent-dark">
           <TextInput
             className="flex-1 text-[15px] text-ink dark:text-ink-dark"
             placeholder="Search invoice number"
@@ -225,7 +215,7 @@ export default function Sale() {
         </View>
 
         <View className="mt-4 flex-row">
-          <View className="mr-3 flex-1 rounded-2xl border border-line bg-card px-3 py-2 dark:border-line-dark dark:bg-card-dark">
+          <View className="mr-3 flex-1 rounded-2xl border border-line bg-accent px-3 py-2 dark:border-line-dark dark:bg-accent-dark">
             <Text className="text-[11px] text-muted dark:text-muted-dark">
               From
             </Text>
@@ -235,7 +225,7 @@ export default function Sale() {
               </Text>
             </Pressable>
           </View>
-          <View className="flex-1 rounded-2xl border border-line bg-card px-3 py-2 dark:border-line-dark dark:bg-card-dark">
+          <View className="flex-1 rounded-2xl border border-line bg-accent px-3 py-2 dark:border-line-dark dark:bg-accent-dark">
             <Text className="text-[11px] text-muted dark:text-muted-dark">
               To
             </Text>
@@ -277,9 +267,29 @@ export default function Sale() {
           contentContainerClassName="pt-3 pb-32"
           ListEmptyComponent={
             isLoading ? (
-              <Text className="text-[13px] text-muted dark:text-muted-dark">
-                Loading invoices...
-              </Text>
+              <View>
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <View
+                    key={`invoice-skeleton-${index}`}
+                    className="mb-3 rounded-2xl border border-line bg-card px-4 py-4 dark:border-line-dark dark:bg-card-dark"
+                  >
+                    <View className="flex-row items-center justify-between">
+                      <View className="flex-1 pr-3">
+                        <SkeletonBlock height={14} width={120} />
+                        <SkeletonBlock height={12} width={160} className="mt-2" />
+                        <View className="mt-2 flex-row">
+                          <SkeletonBlock height={18} width={60} />
+                          <SkeletonBlock height={18} width={60} className="ml-2" />
+                        </View>
+                      </View>
+                      <View className="items-end">
+                        <SkeletonBlock height={14} width={80} />
+                        <SkeletonBlock height={10} width={60} className="mt-2" />
+                      </View>
+                    </View>
+                  </View>
+                ))}
+              </View>
             ) : (
               <Text className="text-[13px] text-muted dark:text-muted-dark">
                 No invoices found.
