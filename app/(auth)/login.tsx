@@ -6,8 +6,8 @@ import { getApiErrorMessage } from "../../src/services/api";
 
 export default function Index() {
   const { login, isLoading, error } = useAuth();
-  const [email, setEmail] = useState("test2@gmail.com");
-  const [password, setPassword] = useState("123456");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
 
   const isValidEmail = (value: string) =>
@@ -69,7 +69,7 @@ export default function Index() {
           </Text>
           <TextInput
             className="mt-2 rounded-2xl border border-line bg-card px-4 py-3 text-[15px] text-ink dark:border-line-dark dark:bg-card-dark dark:text-ink-dark"
-            placeholder="demo@zentra.com"
+            placeholder="Enter your email"
             placeholderTextColor="#A79B8B"
             autoCapitalize="none"
             keyboardType="email-address"

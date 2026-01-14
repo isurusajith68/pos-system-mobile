@@ -81,6 +81,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (err) {
       const message = getApiErrorMessage(err);
       setError(message);
+      SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY).catch(() => null);
       return null;
     }
   }, [refreshMutation]);
@@ -97,6 +98,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const token = await refreshAccessToken();
       if (!token) {
+        SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY).catch(() => null);
         return;
       }
 

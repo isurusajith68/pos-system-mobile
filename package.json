@@ -6,6 +6,7 @@
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo run:android",
+    "android:release": "cd android && gradlew.bat assembleRelease",
     "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "expo lint"
@@ -46,6 +47,7 @@
     "react-native-worklets": "0.5.1"
   },
   "devDependencies": {
+    "@react-native-community/cli": "^20.1.0",
     "@types/react": "~19.1.0",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~10.0.0",

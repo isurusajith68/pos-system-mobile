@@ -1,0 +1,11 @@
+Next steps (after success)
+
+Once this passes, we will:
+
+Remove expo-dev-client from release
+
+Generate release keystore
+
+Build AAB for Play Store
+
+Enable Hermes + Proguard safely

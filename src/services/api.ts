@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 
-export const API_BASE_URL = "https://vcg5nprb-5000.asse.devtunnels.ms";
+export const API_BASE_URL =
+  process.env.EXPO_PUBLIC_API_BASE_URL ?? "http://47.245.83.89/app1";
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
@@ -102,6 +103,10 @@ api.interceptors.response.use(
 export function getApiErrorMessage(error: unknown) {
   if (error && (error as AxiosError).isAxiosError) {
     const axiosError = error as AxiosError<{ message?: string }>;
+    const status = axiosError.response?.status ?? 0;
+    if (status >= 500) {
+      return "Server unavailable. Please try again.";
+    }
     return (
       axiosError.response?.data?.message ??
       axiosError.message ??
